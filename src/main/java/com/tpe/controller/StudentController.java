@@ -60,6 +60,7 @@ public class StudentController {
         //name gibi özellikler düzgün set edilmiş mi ona bakar.
         // @RequestBody = gelen  requestin bodysindeki bilgiyi ,
         //Student objesine map edilmesini sağlıyor.
+
         studentService.createStudent(student);
 
 
@@ -70,6 +71,32 @@ public class StudentController {
         return new ResponseEntity<>(map, HttpStatus.CREATED); // map + 201 Http Status Kod
 
     }
+
+    //!!! Not: getStudentById RequestParam ******* -->birden çok parametreye göre istek olursa requestparam
+    @GetMapping("/query") //http://localhost:8080/students/query?id=1
+    public ResponseEntity<Student> getStudent(@RequestParam("id") Long id){
+        Student student = studentService.findStudent(id);
+        return ResponseEntity.ok(student);
+    }
+
+    // Not: getStudentById PathVariable  -->tek parametre ise path
+    @GetMapping("/{id}") //http://localhost:8080/students/1
+    public ResponseEntity<Student> getStudentWithPath(@PathVariable("id") Long id){
+
+        return ResponseEntity.ok(studentService.findStudent(id));
+
+    }
+
+    // Not deleteStudentById
+    @DeleteMapping("/{id}") //http://localhost:8080/students/id
+    public ResponseEntity<String> deleteStudentById(@PathVariable("id")Long id){
+        studentService.deleteStudent(id);
+
+        String message="Student is deleted successfully";
+        return new ResponseEntity<>(message,HttpStatus.OK);
+        // return  ResponseEntity.ok(message);
+    }
+
 
 
 

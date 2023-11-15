@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-//@RequiredArgsConstructor
+//@RequiredArgsConstructor //sadece final olan fieldların parametreli const oluştur
 @NoArgsConstructor
 public class Student {
 
