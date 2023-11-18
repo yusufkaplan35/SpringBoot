@@ -1,6 +1,7 @@
 package com.tpe.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -50,5 +51,10 @@ public class Student {
 
     @OneToMany(mappedBy = "student")
     private List<Book> books = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name="user_id")
+    private User user;
+
 
 }
