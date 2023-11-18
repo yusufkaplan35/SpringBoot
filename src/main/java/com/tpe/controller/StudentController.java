@@ -2,12 +2,20 @@ package com.tpe.controller;
 
 
 import com.tpe.domain.Student;
+import com.tpe.dto.StudentDTO;
 import com.tpe.service.StudentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +47,8 @@ import java.util.Map;
 //@Component sadece bean yapar ve handler mapping control sınıfına gönderemez
 @RequestMapping("/students") //http://localhost:8080/students
 public class StudentController {
+
+    Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     @Autowired
     private StudentService studentService;
@@ -97,6 +107,52 @@ public class StudentController {
         // return  ResponseEntity.ok(message);
     }
 
+    //Not: Update Student ************************************
+    @PutMapping("/{id}")  //http://localhost:8080/students/1 + PUT + JSON
+    public ResponseEntity<String> updateStudent(@PathVariable Long id,
+                                                @Valid @RequestBody StudentDTO studentDTO){
+        studentService.updateStudent(id, studentDTO);
+        String message = "Student is updated Successfully";
+        return new ResponseEntity<>(message, HttpStatus.OK); // 200 OK
+    }
+
+
+
+    //Not: getAllWithPage() ******************
+    @GetMapping("/page") //http://localhost:8080/students/page?page=0&size=2&sort=name&direction=ASC +GET
+    public ResponseEntity<Page<Student>> getAllWithPage(
+            @RequestParam("page") int page, // kacinci sayfa gelsin
+            @RequestParam("size") int size, // sayfa basi kac ogrenci
+            @RequestParam("sort") String prop, // siralama hangi degiskene gore yapilacak
+            @RequestParam("direction") Sort.Direction direction // tersden mi yoksa dogal siralama mı yapilacak
+            ){
+        Pageable pageable = PageRequest.of(page,size,Sort.by(direction,prop));
+        Page<Student> studentPage = studentService.getAllWithPage(pageable);
+        return ResponseEntity.ok(studentPage);
+    }
+
+    //Not: GetByLastName() ***************************
+    @GetMapping("/querylastname") // http://localhost:8080/students/querylastname?lastName=Gocmek + GET
+    public ResponseEntity<List<Student>> getStudentByLastName(@RequestParam("lastName") String lastName){
+        List<Student> list=studentService.findStudentByLastName(lastName);
+        return ResponseEntity.ok(list);
+
+    }
+
+
+    //Not: GetStudentByGrade(with JPQL (Java Persistance Query Language)) ************
+    @GetMapping("/grade/{grade}") // http://localhost:8080/students/grade/70 + GET
+    public ResponseEntity<List<Student>> getStudentsEqualsGrade(@PathVariable("grade")Integer grade ){
+        List<Student> list = studentService.getStudentsEqualsGrade(grade);
+        return ResponseEntity.ok(list);
+    }
+
+    //Not: Logger icin yazildi *******************************
+    @GetMapping("/welcome")//http://localhost:8080/students/welcome
+    public String welcome(HttpServletRequest request){
+        logger.warn("---------------------- Welcome {}", request.getServletPath());
+        return "Welcome to Student Controller";
+    }
 
 
 
