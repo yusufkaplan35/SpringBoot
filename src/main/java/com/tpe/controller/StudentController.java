@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,11 +56,11 @@ public class StudentController {
 
     //!!! Get ALL STUDENTS
     @GetMapping //http://localhost:8080/students + GET
+    @PreAuthorize("hasRole('ADMIN')") // ROLE_ADMIN -> hasRole yapıyor bunu
     public ResponseEntity<List<Student>> getAll (){  // ResponseEntity: status ile birlikte paket halinde cevap gönderir
 
         List<Student> students = studentService.getAll();
         return ResponseEntity.ok(students); // 200 HTTP Status Code
-
     }
 
     // !!! Create new Student
